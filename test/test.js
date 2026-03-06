@@ -230,6 +230,14 @@ describe('replace_chunks', function() {
     });
   });
 
+  it('should suppress verbose output for chunks with verbose:false', function() {
+    var input = '<!-- rc|src:source.html|verbose:false -->old content<!-- endrc -->';
+    return run(rc.replace_chunks({ verbose: true }), input).then(function(result) {
+      assert(result.includes('Hello World'), 'should still replace content when verbose:false');
+      assert(!result.includes('old content'), 'should remove original text');
+    });
+  });
+
   it('should handle nested chunk replacement (source containing chunks)', function() {
     var input = '<!-- rc|src:nested_source.html -->\n<!-- endrc -->';
     return run(rc.replace_chunks(), input).then(function(result) {

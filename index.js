@@ -265,11 +265,13 @@ function replace_chunks(input_params) {
         }
         // replace the original match with the new one we created.
         //console.log(match);
-        do_output('--------------------------------');
-        do_output('Found this: ');
-        do_output(clr.cyan(match));
-        do_output('Replacing with: ');
-        do_output(clr.yellow(replace_text));
+        if (commands.verbose !== 'false') {
+          do_output('--------------------------------');
+          do_output('Found this: ');
+          do_output(clr.cyan(match));
+          do_output('Replacing with: ');
+          do_output(clr.yellow(replace_text));
+        }
 
         content = content.replace(match, function() { return replace_text; });
       }
