@@ -1,6 +1,6 @@
 {
   "name": "gulp-replace-chunks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Replace chunks of code using files which are configured in the block",
   "main": "index.js",
   "scripts": {
