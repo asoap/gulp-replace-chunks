@@ -26,7 +26,10 @@
   },
   "homepage": "https://github.com/asoap/gulp-replace-chunks/",
   "devDependencies": {
-    "mocha": "^11.7.5",
+    "mocha": "^11.3.0",
     "vinyl": "^3.0.1"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.4"
   }
 }
