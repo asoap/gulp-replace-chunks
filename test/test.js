@@ -238,6 +238,18 @@ describe('replace_chunks', function() {
     });
   });
 
+  it('should force verbose output for chunks with verbose:true even when global verbose is false', function() {
+    var input = '<!-- rc|src:source.html|verbose:true -->old content<!-- endrc -->';
+    var logs = [];
+    var origLog = console.log;
+    console.log = function() { logs.push([].slice.call(arguments).join(' ')); origLog.apply(console, arguments); };
+    return run(rc.replace_chunks({ verbose: false }), input).then(function(result) {
+      console.log = origLog;
+      assert(result.includes('Hello World'), 'should still replace content');
+      assert(logs.some(function(l) { return l.includes('Found this'); }), 'should have logged Found this');
+    });
+  });
+
   it('should handle nested chunk replacement (source containing chunks)', function() {
     var input = '<!-- rc|src:nested_source.html -->\n<!-- endrc -->';
     return run(rc.replace_chunks(), input).then(function(result) {

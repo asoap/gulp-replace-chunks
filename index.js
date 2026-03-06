@@ -265,12 +265,16 @@ function replace_chunks(input_params) {
         }
         // replace the original match with the new one we created.
         //console.log(match);
-        if (commands.verbose !== 'false') {
-          do_output('--------------------------------');
-          do_output('Found this: ');
-          do_output(clr.cyan(match));
-          do_output('Replacing with: ');
-          do_output(clr.yellow(replace_text));
+        // Resolve per-chunk verbose: chunk-level overrides global
+        var chunk_verbose = commands.verbose !== undefined
+          ? commands.verbose !== 'false'
+          : params.verbose;
+        if (chunk_verbose) {
+          console.log('--------------------------------');
+          console.log('Found this: ');
+          console.log(clr.cyan(match));
+          console.log('Replacing with: ');
+          console.log(clr.yellow(replace_text));
         }
 
         content = content.replace(match, function() { return replace_text; });
