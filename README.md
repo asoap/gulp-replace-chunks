@@ -1,15 +1,10 @@
 # gulp-replace-chunks
 
-## NOTE: Still an early development version.  I have now used it in a project and so far it's doing it's job nicely.
-
-> A plugin for [gulp](https://github.com/wearefractal/gulp). This lets you replace chunks of code using block/comment tags.  You configure the source and how it will replace in the block.  
-
-
+> A plugin for [gulp](https://github.com/wearefractal/gulp). This lets you replace chunks of code using block/comment tags. You configure the source and how it will replace in the block.
 
 ## Introduction
 
-`gulp-replace-chunks` In it's simplest form you can replace text in between <!-- --> tags.  It is also configured in the block so you can say where it's replaced from.  I built this because I wanted the same code added to multiple files.  Also I wanted different processes to be able to add to each of these chunks.  
-
+`gulp-replace-chunks` In its simplest form you can replace text in between <!-- --> tags. It is also configured in the block so you can say where it's replaced from. I built this because I wanted the same code added to multiple files. Also I wanted different processes to be able to add to each of these chunks.
 
 ## Installation
 
@@ -22,7 +17,6 @@ npm install --save-dev gulp-replace-chunks
 ## Basic usage
 
 **The target file `src/index.html`:**
-
 
 ```html
 <!DOCTYPE html>
@@ -47,7 +41,6 @@ npm install --save-dev gulp-replace-chunks
 ```html
   <div>No more headers</div>
 ```
-
 
 **The `gulpfile.js`:**
 
@@ -80,11 +73,69 @@ exports.example                              = example;
 </html>
 ```
 
+## Example: Basic usage with JavaScript files
+
+**The target file `src/app.js`:**
+
+```javascript
+var app = (function() {
+  //-- rc|src:helpers.js --//
+  function placeholder() { return false; }
+  //-- endrc --//
+
+  return {
+    init: function() {
+      console.log('App started');
+    }
+  };
+})();
+```
+
+**The source file `src/helpers.js`: (note: paths are relative to the target file)**
+
+```javascript
+  function greet(name) { return 'Hello, ' + name; }
+  function add(a, b) { return a + b; }
+```
+
+**The `gulpfile.js`:**
+
+```javascript
+const { src, dest }                             = require('gulp');
+const { replace_chunks, rc_remove_tags }     = require('gulp-replace-chunks');
+
+function example() {
+  return src('src/app.js')
+    .pipe(replace_chunks({
+      tags: {
+        start: '//--',
+        end:   '--//'
+      }
+    }))
+    .pipe(dest('build/'));
+}
+
+exports.example                              = example;
+```
+
+**`build/app.js` after running `gulp example`:**
+
+```javascript
+var app = (function() {
+  function greet(name) { return 'Hello, ' + name; }
+  function add(a, b) { return a + b; }
+
+  return {
+    init: function() {
+      console.log('App started');
+    }
+  };
+})();
+```
+
 ## Example: Using a single file for multiple sources
 
 Instead of having multiple files clogging up your folder you can put code into a single file
-
-**Project structure:**
 
 **The target file `src/index.html`:**
 
@@ -135,16 +186,10 @@ Instead of having multiple files clogging up your folder you can put code into a
 </html>
 ```
 
-
-
-
-
 ## Example: One tag two pipes
 
-If you have an area where you want multiple processes to add content, you can use these settings.  For example you might want
+If you have an area where you want multiple processes to add content, you can use these settings. For example you might want
 to have a tag for the footer area where you can include javascript
-
-**Project structure:**
 
 **The target file `src/index.html`:**
 
@@ -155,7 +200,6 @@ This is the initial text
 ```
 
 **The `gulpfile.js`**
-
 
 ```javascript
 const { src, dest }                             = require('gulp');
@@ -181,7 +225,7 @@ function example() {
 exports.example                              = example;
 ```
 
-### NOTE: If you're using this option, I strongly consider using the name property.  If you leave the name out, it defaults to "default" and will execute on any non named chunks.
+### NOTE: If you're using this option, I strongly recommend using the name property. If you leave the name out, it defaults to "default" and will execute on any non named chunks.
 
 **`build/index.html` after running `gulp example`:**
 
@@ -192,10 +236,6 @@ Appending #1
 <p><strong>THIS IS THE NEW PARAGRAPH 1! MUAHAHA!</strong></p>
 <!-- endrc -->
 ```
-
-
-
-
 
 ## Example: More options
 
@@ -274,40 +314,44 @@ Appending #1
 </body>
 </html>
 ```
+
 Let's break down some of these parameters.
 
-## Tagline parameters
+## Inline tag parameters
 
-#### name
-Parameter: `name`  
+### name
+Parameter: `name`
 Type: `String`
 Default: `default`
 
 This is used if you want to have different processes replace different parts of code. You can remove the name parameter and
 in the gulpfile.js it will still appear under 'default'
 
-#### src
-Parameter: `src`  
+### src
+Parameter: `src`
 Type: `String`
 Default: `Null`
 
-Example: 'src:some_file.html' This is the file that you use to load in code.  As you can see in the example above '#string' added to the src let's you define a section of that file to get code from.  
+Example: 'src:some_file.html' This is the file that you use to load in code. As you can see in the example above '#string' added to the src lets you define a section of that file to get code from.
 
-#### action
-Parameter: `action`  
+### action
+Parameter: `action`
 Type: `String`
 Default: `replace`
 
-Possible values: 'replace', 'append', 'prepend'.  You can keep on adding more and more code to the end/beginning of a chunk.
+Possible values: 'replace', 'append', 'prepend'. You can keep on adding more and more code to the end/beginning of a chunk.
 
+## Gulpfile parameters
 
-## replace_chunks() parameters
+These parameters are passed to `replace_chunks()` in your gulpfile. When a parameter is specified here, it overrides whatever the inline tag defines for that parameter.
+
+**WARNING: If any of these overriding parameters (`new_text`, `src`, `action`) are used while executing on the default tag, they will apply to every default tag.**
 
 ```javascript
 const { src, dest }                             = require('gulp');
 const { replace_chunks, rc_remove_tags }     = require('gulp-replace-chunks');
 
-function example() {  
+function example() {
   // These are the default parameters for replace_chunks()
   return src('src/index.html')
     .pipe(replace_chunks({
@@ -329,22 +373,22 @@ function example() {
 exports.example                              = example;
 ```
 
-#### name
-Parameter: `name`  
+### name
+Parameter: `name`
 Type: `String`
 Default: `default`
 
-Used to identify which blocks to work on.  If no name is provided in the original code it assumes the name is 'default'
+Used to identify which blocks to work on. If no name is provided in the original code it assumes the name is 'default'
 
-#### remove_tags
-Parameter: `remove_tags`  
+### remove_tags
+Parameter: `remove_tags`
 Type: `Boolean`
 Default: `true`
 
-If you want multiple processes to work on the same chunk then set remove_tags to false.  They will remain for the next process and can be identified again by the next one.
+If you want multiple processes to work on the same chunk then set remove_tags to false. They will remain for the next process and can be identified again by the next one.
 
-#### callback
-Parameter: `callback`  
+### callback
+Parameter: `callback`
 Type: `Function`
 Default: `undefined`
 
@@ -358,9 +402,10 @@ Example:
   return "I like fish";
 }}))
 ```
-This allows you to change exactly what/how blocks are changed from your gulpfile.  Commands contains all of the items from the <!-- --> line.  For example:  <!--rc|name:default|src:bits.html#section_1|action:append -->
 
-Texts, these include:
+This allows you to change exactly what/how blocks are changed from your gulpfile. The `commands` argument contains all of the parameters parsed from the tag line. For example: `<!--rc|name:default|src:bits.html#section_1|action:append -->`
+
+The `texts` argument contains the content associated with the chunk:
 ```javascript
 {
   command_line: '<!-- rc|src:bits.html#section_whatever -->\r\n',
@@ -370,21 +415,18 @@ Texts, these include:
   replace_text: '<p><strong>WHY AM I YELLING!?</strong></p>\r\n'
 }
 ```
-So the lines that start/end a chunk. What was originally in a chunk, what was loaded and what is going to replaced.
-Now if you don't want any of this, just return the function with your new text.  For example: "I like fish"
 
+These are the lines that start/end a chunk, what was originally in a chunk, what was loaded, and what is going to be replaced. If you want to override the replacement, return your new text from the callback. For example: `return "I like fish";`
 
-
-#### verbose
-Parameter: `verbose`  
+### verbose
+Parameter: `verbose`
 Type: `Boolean`
 Default: `false`
 
-It will spit out a bunch of stuff to the console while you're running gulp tasks.  It's good if you're developing a gulpfile.
+Logs detailed processing information to the console. Useful when debugging your gulpfile.
 
-
-#### tags
-Parameter: `tags`  
+### tags
+Parameter: `tags`
 Type: `Object`
 Default: `<!-- and -->`
 
@@ -395,46 +437,34 @@ tags: {
   end :     '-->'
 }
 ```
-You can provide a new object if you want the start and end tags to be ||- and -||.  Or maybe //- and -//
+You can provide a new object if you want the start and end tags to be ||- and -||. Or maybe //- and -//
 
-
-
-#### new_text
-Parameter: `new_text`  
+### new_text
+Parameter: `new_text`
 Type: `String`
 Default: `undefined`
 
-This will overwrite whatever you have as source in your original file. This is good if you want to add text to a specific tag.
+Overrides the source content defined in the inline tag with the provided string. This is good if you want to add text to a specific tag.
 
-**WARNING:  If this parameter is used while executing on the default tag it will overwrite every default tag.**
-
-
-#### src
-Parameter: `src`  
+### src
+Parameter: `src`
 Type: `String`
 Default: `undefined`
 
-This will overwrite whatever your initial text file has defined. This is good if you want to add text to a specific tag.
+Overrides the source file path defined in the inline tag. This is good if you want to point a tag at a different file from your gulpfile.
 
-**WARNING:  If this parameter is used while executing on the default tag it will overwrite every default tag.**
-
-
-
-#### action
-Parameter: `action`  
+### action
+Parameter: `action`
 Type: `String`
 Default: `undefined`
 
-This will overwrite whatever your initial text file has defined. This is good if you want to add text to a specific tag.
+Overrides the action mode defined in the inline tag.
 
-Possible values: 'replace', 'append', 'prepend'.  
-
-**WARNING:  If this parameter is used while executing on the default tag it will overwrite every default tag.**
-
+Possible values: 'replace', 'append', 'prepend'.
 
 # rc_remove_tags()
 
-Say you have completed all of your work on a file but there is still RC tags laying around and you want to remove them.  This is where rc_remove_tags() comes in.
+Say you have completed all of your work on a file but there is still RC tags laying around and you want to remove them. This is where rc_remove_tags() comes in.
 
 Example:
 
@@ -453,4 +483,4 @@ function lets_build() {
     .pipe(dest('build/'));
 }
 ```
-The above example will execute replace_chunks(), then rc_remove_tags looks for ||- -|| tags which was used in an example above.  Finally we run rc_remove_tags() again without parameters which will remove any left over <!-- rc --> tags.
+The above example will execute replace_chunks(), then rc_remove_tags looks for ||- -|| tags which was used in an example above. Finally we run rc_remove_tags() again without parameters which will remove any left over <!-- rc --> tags.
