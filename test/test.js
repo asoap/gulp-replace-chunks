@@ -230,6 +230,14 @@ describe('replace_chunks', function() {
     });
   });
 
+  it('should handle nested chunk replacement (source containing chunks)', function() {
+    var input = '<!-- rc|src:nested_source.html -->\n<!-- endrc -->';
+    return run(rc.replace_chunks(), input).then(function(result) {
+      assert(result.includes('<span>Inner Content</span>'), 'should resolve inner chunk');
+      assert(result.includes('<div class="outer">'), 'should contain outer wrapper');
+    });
+  });
+
   it('should replace chunk with no src using new_text param', function() {
     var input = '<!-- rc|name:footer -->old content<!-- endrc -->';
     return run(rc.replace_chunks({ name: 'footer', new_text: 'NEW FOOTER' }), input).then(function(result) {

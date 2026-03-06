@@ -222,6 +222,8 @@ function replace_chunks(input_params) {
         var new_content = '';
         if (commands.src) {
           new_content = get_source_contents(relative_base_path, commands.src);
+          var src_path = relative_base_path + "\\" + removeRelativePathPrefix(commands.src.split('#')[0]);
+          new_content = process_file(new_content, src_path);
         }
 
         if (params.new_text) {
