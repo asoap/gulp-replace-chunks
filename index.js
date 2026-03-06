@@ -269,7 +269,7 @@ function replace_chunks(input_params) {
         do_output('Replacing with: ');
         do_output(clr.yellow(replace_text));
 
-        content = content.replace(match, replace_text);
+        content = content.replace(match, function() { return replace_text; });
       }
 
     }
